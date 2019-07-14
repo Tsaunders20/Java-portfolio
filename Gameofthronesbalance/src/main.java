@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 
+
 public class main {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
@@ -21,8 +22,15 @@ public class main {
 		
 		
 		String fileName = "Unittest";
-		getFile(fileName);
-
+		System.out.println(getFile(fileName));
+		
+		fileName = "Unittestfail";
+		System.out.println(getFile(fileName));
+		
+		fileName = "biggot";
+		System.out.println(getFile(fileName));
+		
+		
 
 
 	}
@@ -34,76 +42,129 @@ public class main {
             String line;
             int check = 0;
             String[][] arr = new String[0][0];
-            while ((line = br.readLine()) != null) {
+            int iter = 0;
+            int n=0;
+            while ((line = br.readLine()) != null) { // Effectively going over m lines
                 
-                System.out.println(line);
                 if(check == 0) {
-                	int n = Integer.parseInt(line.substring(0, line.indexOf(" ")));
+                	n = Integer.parseInt(line.substring(0, line.indexOf(" ")));
                 	int m = Integer.parseInt(line.substring(line.indexOf(" ")+1, line.length()));
                 	arr=new String[n][3];
                 	
                 	check = 1;
                 }
                 else {
-                // In hindsight didn't need m but effectivelly what were doing is creating a multi-dimensional array
+                // In hindsight didn't need m but effectively what were doing is creating a multi-dimensional array
                 // So we'll have roughly a array like [ [CHARACTERNAME,FRIENDS,ENEMIES] ,[...] ];
 
-                
-               
-                	String Character1 = line.substring(0, line.indexOf(" "));
-                	String Character2 = line.substring(line.lastIndexOf(" ")+1, line.length());
-                	String status = line.substring(line.indexOf(" ")+1, line.indexOf(" ",line.indexOf(" ")+1));
-                	System.out.println(Character1);
-                	System.out.println(Character2);
-                	System.out.println(status);
+                String status = "--";
+                	if(line.indexOf("++")!=-1) {
+                		//Originally had a bunch of substrings using the spaces
+                		//But characters with spaces were messing everything up
+                		status = "++";
+                	}
+                	String Character1 = line.substring(0, line.indexOf(status)-1);
+                	String Character2 = line.substring(line.lastIndexOf(status)+3, line.length());
+                //	String status = line.substring(line.indexOf(" ")+1, line.indexOf(" ",line.indexOf(" ")+1));
                 	
 
-                	boolean contains = Arrays.stream(arr).anyMatch(Character1::equals);
-                	if(contains == false) {
-                		for (int r=0; r<arr.length; r++) {
-                			arr[r][0] = Character1;
-                			System.out.println(arr[r][0]);
-                		     if(status == "++") {
-                		    	 arr[r][1] = "1";
-                		    	 arr[r][2] = "0";
-                		     }
-                		     else {
-                		    	 arr[r][1] = "0";
-                		    	 arr[r][2] = "1";
-                		     }
-                		         
-                		     
-                		 }
+					int contains = doesexist(arr,Character1,arr.length);
+                	if(contains == -1) {
+                		arr[iter][0] = Character1;
+                		if(status.equals("++")) {
+                		arr[iter][1] = "1";
+                		arr[iter][2] = "0";
+                		}
+                		else {
+                			arr[iter][1] = "0";
+                		arr[iter][2] = "1";
+                		}
+                		iter++;
                 	
                 	}
                 	else {
-                		System.out.println("in");
-                		for (int i = 0; i < arr.length; i++) {
-							if(arr[i][0] == Character1) {
-								if(status == "++") {
-									System.out.println(arr[i][1]);
-	                		    	 arr[i][1] = Integer.toString(Integer.parseInt(arr[i][1])+1);
-	                		    	 System.out.println(arr[i][1]);
-	                		     }
-	                		     else {
-	                		    	 arr[i][2] = Integer.toString(Integer.parseInt(arr[i][2])+1);
-	                		     }
-								
-							}
-						}
+                		if(status.equals("++")) {
+           		    	 arr[contains][1] = Integer.toString(
+           		    			 Integer.parseInt(arr[contains][1])+1
+           		    			 );
+	           		     }
+	           		     else {
+	           		    	 arr[contains][2] = Integer.toString(
+	           		    			 Integer.parseInt(arr[contains][2])+1);
+	           		     }
+
+                		
+                		
+                	}
+                	
+                	contains = doesexist(arr,Character2,arr.length);
+                	if(contains == -1) {
+                		arr[iter][0] = Character2;
+                		if(status.equals("++")) {
+                		arr[iter][1] = "1";
+                		arr[iter][2] = "0";
+                		}
+                		else {
+                			arr[iter][1] = "0";
+                		arr[iter][2] = "1";
+                		}
+                		iter++;
                 	
                 	}
-                	System.out.println(Arrays.toString(arr));
+                	else {
+                		if(status.equals("++")) {
+           		    	 arr[contains][1] = Integer.toString(
+           		    			 Integer.parseInt(arr[contains][1])+1
+           		    			 );
+	           		     }
+	           		     else {
+	           		    	 arr[contains][2] = Integer.toString(
+	           		    			 Integer.parseInt(arr[contains][2])+1);
+	           		     }
+
+                		
+                		
+                	}
+                	
+                	
+                	
+                	
+                	
+                	
                 }
-                
-                
             }
+            int friendcount = Integer.parseInt(arr[0][1]);
+            int enemycount = Integer.parseInt(arr[0][2]);
+            for(int y=0;y<n;y++) {
+    		//System.out.println(arr[y][0] + ", " + arr[y][1] + ", " + arr[y][2]);
+            	//For debug, outputs the table itself in our variable format
+            	/* 
+            	 * Superman, 2, 3
+					Green Lantern, 2, 3
+					Wonder Woman, 2, 3
+					Sinestro, 2, 3
+					Cheetah, 2, 3
+					Lex Luthor, 2, 3
+            	 */
+    		if(Integer.parseInt(arr[y][1]) != friendcount || Integer.parseInt(arr[y][2]) != enemycount) {
+    			return "Not Balanced";
+    			
+    		}
+            }
+            return "balanced";
         }
 		
 		
 		
-		
-		return "test";
+	}
+	private static int doesexist(String [][]arr,String Character,int length) {
+		// Originally did a boolean for this, but realised i could just give myself the index for later and make it easier
+		for(int i=0;i<length;i++) {
+			if(Character.equals(arr[i][0])) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 }
